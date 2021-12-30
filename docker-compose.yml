@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  kube-ssh-proxy-server:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    command: bash /entrypoint.sh server
+    container_name: kube-ssh-proxy-server
+    image: kube-ssh-proxy:latest
+    restart: on-failure
+    ports:
+      - "2200:2200"
+      - "8000:8000"
+    volumes:
+      - server-hostkeys:/etc/ssh/hostkeys
+      - server-dotssh:/home/sshuser/.ssh
+  kube-ssh-proxy-client:
+    command: bash /entrypoint.sh client
+    container_name: kube-ssh-proxy-client
+    environment:
+      - "SSH_SERVER=kube-ssh-proxy-server"
+      - "DISPATCHER_HOST=kube-ssh-proxy-client-dispatcher"
+    image: kube-ssh-proxy:latest
+    restart: on-failure
+    volumes:
+      - client-dotssh:/home/sshuser/.ssh
+  kube-ssh-proxy-client-dispatcher:
+    container_name: kube-ssh-proxy-client-dispatcher
+    image: nginx:latest
+    restart: on-failure
+    volumes:
+      - dispatcher-config:/etc/nginx/conf.d
+  local-svc-mock-1:
+    container_name: local-svc-1
+    image: nginx:latest
+    restart: on-failure
+  local-svc-mock-2:
+    container_name: local-svc-2
+    image: nginx:latest
+    restart: on-failure
+
+volumes:
+  server-hostkeys:
+  server-dotssh:
+  client-dotssh:
+  dispatcher-config:
