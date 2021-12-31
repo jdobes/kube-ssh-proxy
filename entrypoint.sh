@@ -19,8 +19,13 @@ if [[ ! -z $1 ]]; then
         fi
         cat /home/sshuser/.ssh/id_rsa.pub
 
-        if [ -z "$SSH_SERVER" ]; then
-            echo "SSH_SERVER is not set!"
+        if [ -z "$SSH_SERVER_HOST" ]; then
+            echo "SSH_SERVER_HOST is not set!"
+            exit 2
+        fi
+
+        if [ -z "$SSH_SERVER_PORT" ]; then
+            echo "SSH_SERVER_PORT is not set!"
             exit 2
         fi
 
@@ -29,12 +34,17 @@ if [[ ! -z $1 ]]; then
             exit 2
         fi
 
+        if [ -z "$DISPATCHER_PORT" ]; then
+            echo "DISPATCHER_PORT is not set!"
+            exit 2
+        fi
+
         exec /usr/bin/ssh -o "StrictHostKeyChecking=no" \
                           -o "ServerAliveInterval=60" \
                           -t -t \
-                          -p 2200 \
-                          -R 8000:$DISPATCHER_HOST:80 \
-                          sshuser@$SSH_SERVER
+                          -p $SSH_SERVER_PORT \
+                          -R 8000:$DISPATCHER_HOST:$DISPATCHER_PORT \
+                          sshuser@$SSH_SERVER_HOST
     fi
 fi
 
