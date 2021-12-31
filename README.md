@@ -1,5 +1,11 @@
 # kube-ssh-proxy
 
+Reverse proxy to access kubernetes services in cluster behind NAT. Using reverse SSH to public cluster.
+
+## How it works
+
+![](/diagram.png)
+
 ## Local usage
 
     # Terminal 1
