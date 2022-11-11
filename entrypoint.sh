@@ -9,7 +9,7 @@ if [[ ! -z $1 ]]; then
         else
             echo "Host keys exist, skipping generation."
         fi
-        exec /usr/sbin/sshd -D
+        exec /usr/sbin/sshd -D -o "ClientAliveInterval=60"
     elif [[ "$1" == "client" ]]; then
         if [ -z "$(ls -A /home/sshuser/.ssh)" ]; then
             echo "Generating client keys..."
